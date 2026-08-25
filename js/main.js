@@ -172,7 +172,7 @@ stopBtn.addEventListener('click', async () => {
             isMusicGenerationActive = true;
             Tone.Transport.bpm.value = currentTempo;
             Tone.Transport.start();
-            stopBtn.textContent = '⏹';
+            stopBtn.textContent = '■';
             stopBtn.title = 'Silence everything immediately';
             stopBtn.classList.add('playing');
             editor.focus();
