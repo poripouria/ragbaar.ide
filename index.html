@@ -13,14 +13,11 @@
 </head>
 <body>
 
-    <div class="start-overlay" id="startOverlay">
-        <button class="start-btn" id="startBtn">🎵 Start Music Engine</button>
-    </div>
-
     <div class="titlebar">
         <div class="titlebar-left">
             <div class="traffic-lights">
-                <span class="red"></span><span class="yellow"></span><span class="green"></span>
+                <span class="red" id="redBtn" title="Close"></span>
+                <span class="green" id="greenBtn" title="Save"></span>
             </div>
             <div class="titlebar-title">
                 <strong>RagbaarNet</strong> —
@@ -31,12 +28,10 @@
         </div>
         <div class="status">
             <div class="volume-control">
-                <span>🔊</span>
-                <input type="range" id="volumeSlider" min="0" max="100" value="70">
                 <span id="volumeLabel">70%</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="70">
             </div>
-            <button class="icon-btn" id="saveBtn" title="Save as file (Ctrl+S)">💾</button>
-            <button class="icon-btn stop-btn" id="stopBtn" title="Silence everything immediately">⏹</button>
+            <button class="icon-btn stop-btn" id="stopBtn" title="Start Music Engine">▶</button>
         </div>
     </div>
 
@@ -47,7 +42,8 @@
             <textarea id="editor" spellcheck="false" autocomplete="off" autocapitalize="off"
                 placeholder=
 "// Start typing and enjoy your performance! Each key press sends a NOTE_ON/NOTE_OFF to the processor.
-function ragbaarNet(scene) {
+
+function RagbaarNet(scene) {
     return generateMusic(scene);
 }"
             ></textarea>

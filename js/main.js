@@ -109,28 +109,37 @@ let noteCount = 0;
 const noteCountEl = document.getElementById('noteCount');
 
 // --- Start-engine gesture (Web Audio requires a real user interaction) -----
-const startOverlay = document.getElementById('startOverlay');
-const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
 
-startBtn.addEventListener('click', async () => {
-    try {
-        await Tone.start();
-        initializeAudioSystem();          // builds the mastering chain + instrument factories
-        isMusicGenerationActive = true;   // audio-engine.js checks this before playing tonal notes
-        Tone.Transport.bpm.value = currentTempo;
-        Tone.Transport.start();
-        startOverlay.style.display = 'none';
-        editor.focus();
-        console.log('🎵 Audio engine started');
-    } catch (err) {
-        console.error('❌ Failed to start audio engine:', err);
-        statusTextEl.textContent = 'Failed to start audio — see console';
-    }
-});
-
-document.getElementById('stopBtn').addEventListener('click', () => {
-    if (typeof hardStopAllAudio === 'function') {
-        hardStopAllAudio();
+stopBtn.addEventListener('click', async () => {
+    if (!isMusicGenerationActive) {
+        // Start Engine
+        try {
+            await Tone.start();
+            if (typeof initializeAudioSystem === 'function') {
+                initializeAudioSystem();
+            }
+            isMusicGenerationActive = true;
+            Tone.Transport.bpm.value = currentTempo;
+            Tone.Transport.start();
+            stopBtn.textContent = '⏹';
+            stopBtn.title = 'Silence everything immediately';
+            editor.focus();
+            console.log('🎵 Audio engine started');
+        } catch (err) {
+            console.error('❌ Failed to start audio engine:', err);
+            statusTextEl.textContent = 'Failed to start audio — see console';
+        }
+    } else {
+        // Stop Engine
+        isMusicGenerationActive = false;
+        Tone.Transport.stop();
+        if (typeof hardStopAllAudio === 'function') {
+            hardStopAllAudio();
+        }
+        stopBtn.textContent = '▶';
+        stopBtn.title = 'Start Music Engine';
+        console.log('🛑 Audio engine stopped');
     }
 });
 
@@ -148,7 +157,20 @@ function saveFile() {
     URL.revokeObjectURL(url);
 }
 
-document.getElementById('saveBtn').addEventListener('click', saveFile);
+// Traffic lights: red asks to save, green saves directly.
+const redBtn = document.getElementById('redBtn');
+const greenBtn = document.getElementById('greenBtn');
+
+if (redBtn) {
+    redBtn.addEventListener('click', () => {
+        if (confirm("Save the file?")) {
+            saveFile();
+        }
+    });
+}
+if (greenBtn) {
+    greenBtn.addEventListener('click', saveFile);
+}
 
 // Filename drives syntax highlighting (see detectLanguage above) and
 // auto-sizes to its own content so it doesn't look like a fixed-width box.

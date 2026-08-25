@@ -40,7 +40,7 @@ body {
 
 .traffic-lights { display: flex; gap: 7px; }
 .traffic-lights span {
-    width: 11px; height: 11px; border-radius: 50%; display: inline-block;
+    width: 11px; height: 11px; border-radius: 50%; display: inline-block; cursor: pointer;
 }
 .traffic-lights .red { background: #ff5f56; }
 .traffic-lights .yellow { background: #ffbd2e; }
@@ -128,41 +128,6 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-}
-
-/* --- start-engine overlay (Web Audio needs a user gesture) --------------- */
-.start-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(2px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-}
-
-.start-btn {
-    background: var(--accent);
-    color: #0a0a0a;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
-}
-.start-btn:hover { filter: brightness(1.08); }
-
-.volume-control {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.volume-control input[type="range"] {
-    width: 80px;
-    accent-color: var(--accent);
 }
 
 /* Small square icon buttons (save, stop) instead of wide text buttons */
