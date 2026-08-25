@@ -1,0 +1,257 @@
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-editor: #1e1e1e;
+    --bg-gutter: #1a1a1a;
+    --bg-titlebar: #2d2d2d;
+    --accent: #00ff88;
+    --text-primary: #d4d4d4;
+    --text-muted: #6a6a6a;
+    --border-color: #3a3a3a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* --- title bar, mimicking a code editor window ------------------------ */
+.titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-titlebar);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.traffic-lights { display: flex; gap: 7px; }
+.traffic-lights span {
+    width: 11px; height: 11px; border-radius: 50%; display: inline-block;
+}
+.traffic-lights .red { background: #ff5f56; }
+.traffic-lights .yellow { background: #ffbd2e; }
+.traffic-lights .green { background: #27c93f; }
+
+.titlebar-title {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.titlebar-title strong { color: var(--text-primary); }
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ff5f56;
+    transition: background 0.2s ease;
+}
+.status-dot.connected { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+/* --- editor area -------------------------------------------------------- */
+.editor-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.gutter {
+    width: 48px;
+    padding: 16px 0;
+    text-align: right;
+    background: var(--bg-gutter);
+    color: var(--text-muted);
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    user-select: none;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.gutter div { padding-right: 12px; }
+
+/* --- bottom status bar --------------------------------------------------- */
+.statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--bg-titlebar);
+    border-top: 1px solid var(--border-color);
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.statusbar-group { display: flex; align-items: center; gap: 18px; }
+
+.held-keys {
+    display: flex;
+    gap: 4px;
+    min-height: 20px;
+}
+
+.held-key {
+    background: rgba(0, 255, 136, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+}
+
+.note-count strong { color: var(--accent); }
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- start-engine overlay (Web Audio needs a user gesture) --------------- */
+.start-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.start-btn {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+}
+.start-btn:hover { filter: brightness(1.08); }
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.volume-control input[type="range"] {
+    width: 80px;
+    accent-color: var(--accent);
+}
+
+/* Small square icon buttons (save, stop) instead of wide text buttons */
+.icon-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 4px;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.icon-btn.stop-btn:hover { border-color: #ff5f56; color: #ff5f56; }
+
+/* Editable filename in the title bar - looks like plain text until you
+   notice the dashed underline, then it's obviously an input. */
+.filename-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed transparent;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 0 1px;
+    outline: none;
+}
+.filename-input:hover,
+.filename-input:focus {
+    border-bottom-color: var(--text-muted);
+}
+
+/* --- syntax-highlighted editor -------------------------------------------
+   Classic overlay trick: a real <textarea> sits on top with invisible text
+   (just a visible caret), while a Prism-highlighted <pre><code> underneath,
+   kept pixel-identical (same font/padding/line-height) and scroll-synced,
+   shows the colored text through it. */
+.code-area {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
+.highlight-pre,
+.highlight-pre code[class*="language-"] {
+    margin: 0 !important;
+    background: transparent !important;
+    font-family: 'Consolas', 'Courier New', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    white-space: pre !important;
+    tab-size: 4;
+    text-shadow: none !important;
+}
+
+.highlight-pre {
+    position: absolute;
+    inset: 0;
+    padding: 16px !important;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#editor {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: transparent;
+    caret-color: var(--accent);
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 16px;
+    border: none;
+    outline: none;
+    resize: none;
+    tab-size: 4;
+    white-space: pre;
+}
+
+#editor::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+}
