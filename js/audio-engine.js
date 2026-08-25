@@ -680,11 +680,12 @@ function getCurrentlyPlayingInstruments() {
 }
 
 function updateMusicInfo(musicData) {
-    const eventCount = (musicData && Array.isArray(musicData.events)) ? musicData.events.length : 0;
+    const instruments = getCurrentlyPlayingInstruments();
+    const eventCount = Object.values(instruments).reduce((sum, val) => sum + val, 0);
+
     const key = (musicData && musicData.key_signature) ? musicData.key_signature : lastMusicStatus.keySignature;
     const timesign = (musicData && musicData.time_signature) ? musicData.time_signature : lastMusicStatus.timeSignature;
 
-    const instruments = getCurrentlyPlayingInstruments();
     const instrumentSummary = Object.entries(instruments)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([instr, count]) => `${formatInstrumentName(instr)} (${count})`);

@@ -80,6 +80,14 @@ async function handleTypingObservation(observation) {
     const musicEvents = await musician.generateMusic(sceneEvents);
     if (musicEvents.length === 0) return;
 
+    // Update global note count (only for NOTE_ON)
+    musicEvents.forEach(evt => {
+        if (evt.event_type === 'note_on') {
+            noteCount++;
+        }
+    });
+    if (noteCountEl) noteCountEl.textContent = noteCount;
+
     frameCounter++;
     handleMusicEvents({
         events: musicEvents,
