@@ -37,7 +37,35 @@ async function applySiteMetadata() {
     }
 }
 
-window.addEventListener('DOMContentLoaded', applySiteMetadata);
+window.addEventListener('DOMContentLoaded', () => {
+    applySiteMetadata();
+    checkDevice();
+});
+
+function checkDevice() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     (window.innerWidth <= 768) ||
+                     ('ontouchstart' in window);
+
+    if (isMobile) {
+        const warning = document.createElement('div');
+        warning.className = 'mobile-warning visible';
+        warning.innerHTML = `
+            <div class="mobile-warning-icon">💻</div>
+            <h1>Laptop Recommended</h1>
+            <p>RagbaarNet uses real-time LSTM models that require significant CPU power. Mid-level mobile phones may experience audio noise and performance issues.</p>
+            <p>For the best orchestral experience, please use a <strong>laptop or desktop computer</strong>.</p>
+            <button class="btn-primary" onclick="window.location.reload()">Reload on Laptop</button>
+            <button class="btn-secondary" id="ignoreMobileWarning">Continue on Mobile (Performance may suffer)</button>
+        `;
+        document.body.appendChild(warning);
+
+        document.getElementById('ignoreMobileWarning').addEventListener('click', () => {
+            warning.classList.remove('visible');
+            setTimeout(() => warning.remove(), 300);
+        });
+    }
+}
 
 // --- Onboarding Tip Banner -------------------------------------------------
 const tipBanner = document.getElementById('tipBanner');
