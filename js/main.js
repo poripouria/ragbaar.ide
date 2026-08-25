@@ -39,6 +39,20 @@ async function applySiteMetadata() {
 
 window.addEventListener('DOMContentLoaded', applySiteMetadata);
 
+// --- Onboarding Tip Banner -------------------------------------------------
+const tipBanner = document.getElementById('tipBanner');
+const closeTipBtn = document.getElementById('closeTipBtn');
+
+if (tipBanner && closeTipBtn) {
+    if (localStorage.getItem('ragbaar_tip_dismissed') === 'true') {
+        tipBanner.style.display = 'none';
+    }
+    closeTipBtn.addEventListener('click', () => {
+        tipBanner.style.display = 'none';
+        localStorage.setItem('ragbaar_tip_dismissed', 'true');
+    });
+}
+
 let engine, detector, musician;
 let frameCounter = 0;
 
@@ -124,6 +138,7 @@ stopBtn.addEventListener('click', async () => {
             Tone.Transport.start();
             stopBtn.textContent = '⏹';
             stopBtn.title = 'Silence everything immediately';
+            stopBtn.classList.add('playing');
             editor.focus();
             console.log('🎵 Audio engine started');
         } catch (err) {
@@ -139,6 +154,7 @@ stopBtn.addEventListener('click', async () => {
         }
         stopBtn.textContent = '▶';
         stopBtn.title = 'Start Music Engine';
+        stopBtn.classList.remove('playing');
         console.log('🛑 Audio engine stopped');
     }
 });
